@@ -8,17 +8,16 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { CircleNotchIcon } from '@phosphor-icons/react';
+import { CircleNotchIcon, CheckCircleIcon } from '@phosphor-icons/react';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const signInForm = z.object({
+const checkoutForm = z.object({
   username: z.string(),
   email: z.email(),
   password: z.string().min(6),
 });
 
-type SignInForm = z.infer<typeof signInForm>;
+type CheckoutForm = z.infer<typeof checkoutForm>;
 
 export function Checkout() {
   const [searchParams] = useSearchParams();
@@ -27,7 +26,7 @@ export function Checkout() {
     register,
     handleSubmit,
     formState: { isSubmitting },
-  } = useForm<SignInForm>({
+  } = useForm<CheckoutForm>({
     defaultValues: {
       email: searchParams.get('email') ?? '',
     },
@@ -37,17 +36,16 @@ export function Checkout() {
     mutationFn: handleCheckOut,
   });
 
-  async function handleCheckOut(data: SignInForm) {
+  async function handleCheckOut(data: CheckoutForm) {
     try {
       console.log(data);
-      // throw new Error('');
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       toast.success('Checkout realizado com sucesso.');
 
-      navigate('/');
+      navigate('/success');
     } catch {
-      toast.error('Credenciais inválidas.');
+      toast.error('Erro ao realizar checkout.');
     }
   }
 
@@ -69,6 +67,38 @@ export function Checkout() {
               Bem-vindo! Insira seus dados para solicitar acesso à plataforma
               Jellyfin.
             </p>
+
+            <div className="relative overflow-hidden rounded-xl border border-purple-600/30 to-transparent p-4">
+              <div className="absolute -top-4 -right-4 h-24 w-24 rounded-full bg-purple-600/10 blur-2xl" />
+              <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-2">
+                  <p className="text-muted-foreground text-xs tracking-widest uppercase">
+                    Plano mensal
+                  </p>
+                  <div className="flex items-end gap-1">
+                    <span className="text-muted-foreground text-sm">R$</span>
+                    <span className="text-2xl leading-none font-bold tracking-tight text-purple-400">
+                      5
+                    </span>
+                    <span className="text-muted-foreground text-sm">/mês</span>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex items-center gap-1.5">
+                    <CheckCircleIcon weight="fill" className="h-3.5 w-3.5 text-purple-500" />
+                    <span className="text-muted-foreground text-xs">Filmes e séries</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <CheckCircleIcon weight="fill" className="h-3.5 w-3.5 text-purple-500" />
+                    <span className="text-muted-foreground text-xs">Animes e desenhos</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <CheckCircleIcon weight="fill" className="h-3.5 w-3.5 text-purple-500" />
+                    <span className="text-muted-foreground text-xs">Acesso imediato</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </header>
 
           <form
@@ -82,8 +112,8 @@ export function Checkout() {
                 </FieldLabel>
                 <Input
                   {...register('username')}
-                  type="username"
-                  placeholder="exemplo@email.com"
+                  type="text"
+                  placeholder="seu_usuario"
                   className="text-accent-foreground h-11 transition-all focus:ring-blue-600"
                 />
               </Field>
@@ -101,11 +131,9 @@ export function Checkout() {
               </Field>
 
               <Field className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <FieldLabel className="text-accent-foreground font-medium">
-                    Senha
-                  </FieldLabel>
-                </div>
+                <FieldLabel className="text-accent-foreground font-medium">
+                  Senha
+                </FieldLabel>
                 <Input
                   type="password"
                   {...register('password')}
@@ -121,9 +149,9 @@ export function Checkout() {
               className="flex h-11 w-full flex-row items-center justify-center gap-2 bg-zinc-900 text-white shadow-sm transition-all hover:cursor-pointer hover:border-2 hover:border-purple-600 hover:bg-zinc-800 hover:text-purple-500 active:scale-[0.98] dark:hover:border-purple-800 dark:hover:text-purple-600"
             >
               {isSubmitting && (
-                <CircleNotchIcon className="h-14 w-14 animate-spin" />
+                <CircleNotchIcon className="h-4 w-4 animate-spin" />
               )}
-              Acessar plataforma
+              Assinar agora
             </Button>
           </form>
         </div>
