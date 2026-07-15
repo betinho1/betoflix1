@@ -41,11 +41,20 @@ O sistema funciona de forma assíncrona para garantir a segurança dos dados e q
 
 ## RFs (requisitos funcionais)
 
-- O usuário deve poder 
+- [ ] O usuário deve poder realizar checkout na plataforma para pagamento
+- [ ] O sistema deve redirecionar o usuário para o Stripe Checkout após o cadastro
+- [ ] O sistema deve criar a conta no Jellyfin automaticamente após confirmação do pagamento
+- [ ] O usuário deve ser redirecionado para uma página de sucesso/cancelamento após o checkout
 
 ## RNFs (requisitos não-funcionais)
 
+- [ ] A API deve validar a assinatura do webhook do Stripe antes de processar qualquer evento
+
 ## Regra de negócio
 
+- [ ] A conta no Jellyfin só deve ser criada após confirmação de pagamento pelo Stripe (evento checkout.session.completed)
+- [ ] Os dados do usuário (username, email, password) devem trafegar exclusivamente via metadata da sessão do Stripe
+- [ ] Apenas um plano mensal deve estar disponível para assinatura
+- [ ] O sistema não deve criar contas duplicadas no Jellyfin para o mesmo email
 
 Desenvolvido com ☕ e TypeScript. Sinta-se livre para abrir Issues ou enviar Pull Requests!
