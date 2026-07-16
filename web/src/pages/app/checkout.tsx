@@ -1,9 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
 import { useForm } from 'react-hook-form';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { checkout as checkoutApi } from '@/api/checkout';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -28,34 +29,27 @@ type CheckoutForm = z.infer<typeof checkoutForm>;
 export function Checkout() {
   const [showPassword, setShowPassword] = useState(false);
 
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { isSubmitting },
-  } = useForm<CheckoutForm>({
-    defaultValues: {
-      email: searchParams.get('email') ?? '',
+  } = useForm<CheckoutForm>();
+
+  const { mutateAsync: handleCheckOut } = useMutation({
+    mutationFn: async (data: CheckoutForm) => {
+      const { url } = await checkoutApi(data);
+
+      toast.success('Redirecionando para plataforma Stripe.');
+
+      new Promise((resolve) => setTimeout(resolve, 2000)); // aguardar por 2 segundos
+
+      window.location.href = url;
+    },
+
+    onError: () => {
+      toast.error('Erro ao realizar checkout.');
     },
   });
-
-  const { mutateAsync: checkout } = useMutation({
-    mutationFn: handleCheckOut,
-  });
-
-  async function handleCheckOut(data: CheckoutForm) {
-    try {
-      console.log(data);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      toast.success('Checkout realizado com sucesso.');
-
-      navigate('/success');
-    } catch {
-      toast.error('Erro ao realizar checkout.');
-    }
-  }
 
   return (
     <>
@@ -79,7 +73,7 @@ export function Checkout() {
 
           <form
             className="flex flex-col gap-6"
-            onSubmit={handleSubmit(handleCheckOut)}
+            onSubmit={handleSubmit((data) => handleCheckOut(data))}
           >
             <div className="space-y-4">
               <Field className="space-y-2">
