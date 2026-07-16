@@ -21,6 +21,11 @@ export async function usersRoutes(app: FastifyTypedInstance) {
               url: z.string(),
             })
             .describe("Checkout Stripe Session created."),
+          409: z
+            .object({
+              message: z.string(),
+            })
+            .describe("Username already exists."),
         },
       },
     },

@@ -17,7 +17,8 @@ export async function checkout({ username, email, password }: CheckoutBody) {
     const { message, url } = response.data as { message: string; url: string };
 
     return { message, url };
-  } catch {
-    throw new Error('Houve um problema de conexão com o Stripe.');
+  } catch (err) {
+    throw err;
+    // throw new Error('Houve um problema de conexão com o Stripe.');
   }
 }

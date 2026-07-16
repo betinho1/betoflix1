@@ -17,6 +17,7 @@ import {
 } from '@phosphor-icons/react';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
 import { zodResolver } from '@hookform/resolvers/zod';
+import axios from 'axios';
 
 const checkoutForm = z.object({
   email: z.email('E-mail inválido'),
@@ -58,8 +59,12 @@ export function Checkout() {
       window.location.href = url;
     },
 
-    onError: () => {
-      toast.error('Erro ao realizar checkout.');
+    onError: (error) => {
+      if (axios.isAxiosError(error) && error.response?.status === 409) {
+        toast.error('Username já está em uso.');
+      } else {
+        toast.error('Erro ao realizar checkout.');
+      }
     },
   });
 

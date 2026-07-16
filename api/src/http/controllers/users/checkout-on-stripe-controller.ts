@@ -18,6 +18,21 @@ export async function CheckoutOnStripe(
       req.body,
     );
 
+    const response = await fetch(`${env.JELLYFIN_URL}/Users`, {
+      headers: {
+        Authorization: `MediaBrowser Token="${env.JELLYFIN_API_KEY}"`,
+      },
+    });
+
+    const users = (await response.json()) as { Name: string }[];
+    const alreadyExists = users.some(
+      (user: { Name: string }) => user.Name === username,
+    );
+
+    if (alreadyExists) {
+      return reply.status(409).send({ message: "Username already exists." });
+    }
+
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       line_items: [{ price: env.STRIPE_PRICE_ID, quantity: 1 }],
