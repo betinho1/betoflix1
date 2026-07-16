@@ -49,6 +49,8 @@ O sistema funciona de forma assíncrona para garantir a segurança dos dados e q
 ## RNFs (requisitos não-funcionais)
 
 - [x] A API deve validar a assinatura do webhook do Stripe antes de processar qualquer evento
+- [ ] Dados sensíveis do usuário não devem trafegar em texto puro nos metadados do Stripe
+- [ ] O sistema deve utilizar um identificador temporário associado a um cache Redis
 
 ## Regra de negócio
 
@@ -56,5 +58,6 @@ O sistema funciona de forma assíncrona para garantir a segurança dos dados e q
 - [x] Os dados do usuário (username, email, password) devem trafegar exclusivamente via metadata da sessão do Stripe
 - [x] Apenas um plano mensal deve estar disponível para assinatura
 - [x] O sistema não deve criar contas duplicadas no Jellyfin para o mesmo email
+- [ ] O token temporário deve ser invalidado imediatamente após a criação da conta ou após a expiração do tempo de vida (TTL)
 
 Desenvolvido com ☕ e TypeScript. Sinta-se livre para abrir Issues ou enviar Pull Requests!
