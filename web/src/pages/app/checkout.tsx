@@ -1,7 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
 import { useForm } from 'react-hook-form';
-import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { checkout as checkoutApi } from '@/api/checkout';
@@ -17,11 +16,18 @@ import {
   EyeSlashIcon,
 } from '@phosphor-icons/react';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const checkoutForm = z.object({
-  username: z.string(),
-  email: z.email(),
-  password: z.string().min(6),
+  email: z.email('E-mail inválido'),
+  username: z
+    .string()
+    .min(1, 'Username obrigatório')
+    .max(38, 'Username deve ter no máximo 38 caracteres.'),
+  password: z
+    .string()
+    .min(4, 'Senha deve ter no mínimo 6 caracteres')
+    .max(32, 'Senha deve ter no máximo 32 caracteres.'),
 });
 
 type CheckoutForm = z.infer<typeof checkoutForm>;
@@ -32,8 +38,14 @@ export function Checkout() {
   const {
     register,
     handleSubmit,
-    formState: { isSubmitting },
-  } = useForm<CheckoutForm>();
+    watch,
+    formState: { isSubmitting, errors },
+  } = useForm<CheckoutForm>({
+    resolver: zodResolver(checkoutForm),
+  });
+
+  const fields = watch();
+  const isFormEmpty = !fields.email || !fields.username || !fields.password;
 
   const { mutateAsync: handleCheckOut } = useMutation({
     mutationFn: async (data: CheckoutForm) => {
@@ -86,6 +98,11 @@ export function Checkout() {
                   placeholder="Usuário"
                   className="text-accent-foreground h-11 transition-all focus:ring-blue-600"
                 />
+                {errors.username && (
+                  <span className="text-xs text-red-500">
+                    {errors.username.message}
+                  </span>
+                )}
               </Field>
 
               <Field className="space-y-2">
@@ -98,6 +115,11 @@ export function Checkout() {
                   placeholder="exemplo@email.com"
                   className="text-accent-foreground h-11 transition-all focus:ring-blue-600"
                 />
+                {errors.email && (
+                  <span className="text-xs text-red-500">
+                    {errors.email.message}
+                  </span>
+                )}
               </Field>
 
               <Field className="space-y-2">
@@ -130,12 +152,17 @@ export function Checkout() {
                     </div>
                   </button>
                 </div>
+                {errors.password && (
+                  <span className="text-xs text-red-500">
+                    {errors.password.message}
+                  </span>
+                )}
               </Field>
             </div>
 
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || isFormEmpty}
               className="flex h-11 w-full flex-row items-center justify-center gap-2 bg-zinc-900 text-white shadow-sm transition-all hover:cursor-pointer hover:border-2 hover:border-purple-600 hover:bg-zinc-800 hover:text-purple-500 active:scale-[0.98] dark:hover:border-purple-800 dark:hover:text-purple-600"
             >
               {isSubmitting && (
