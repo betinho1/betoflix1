@@ -27,7 +27,7 @@ O sistema funciona de forma assíncrona para garantir a segurança dos dados e q
 ## Ferramental de Desenvolvimento
 
 * **Front-end:** React, Vite, TypeScript, Tailwind CSS
-* **Back-end:** Node.js, Fastify, TypeScript, Stripe SDK
+* **Back-end:** Node.js, Fastify, TypeScript, Stripe SDK, Swagger, Zod Validation, Vitest
 * **Integração:** Jellyfin REST API
 
 ## Como configurar
