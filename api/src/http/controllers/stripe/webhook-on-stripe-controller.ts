@@ -1,4 +1,5 @@
 import { env } from "@/env";
+import { redisClient } from "@/lib/redis";
 import { stripe } from "@/lib/stripe";
 import { FastifyReply, FastifyRequest } from "fastify";
 
@@ -21,8 +22,15 @@ export async function WebhookOnStripe(
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
-    const { username, password } = session.metadata!;
+    const { key } = session.metadata! as { key: string };
 
+    const data = await redisClient.get(key);
+
+    if (!data) {
+      return reply.status(200).send();
+    }
+
+    const { username, password } = JSON.parse(data);
     const response = await fetch(`${env.JELLYFIN_URL}/Users/New`, {
       method: "POST",
       headers: {
@@ -38,6 +46,8 @@ export async function WebhookOnStripe(
         `Erro na criação do usuário: ${response.status} - ${errorText}`,
       );
     }
+
+    await redisClient.del(key);
   }
 
   return reply.status(200).send();

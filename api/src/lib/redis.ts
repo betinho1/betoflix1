@@ -16,6 +16,7 @@ redisClient.on("error", () => {
 export const limiter = new RateLimiterRedis({
   storeClient: redisClient,
   keyPrefix: "rateLimiter",
-  points: 100,
+  // 20 requisições por segundo
+  points: 20,
   duration: 60,
 });
