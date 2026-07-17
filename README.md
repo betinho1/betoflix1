@@ -50,14 +50,17 @@ O sistema funciona de forma assíncrona para garantir a segurança dos dados e q
 
 - [x] A API deve validar a assinatura do webhook do Stripe antes de processar qualquer evento
 - [ ] Dados sensíveis do usuário não devem trafegar em texto puro nos metadados do Stripe
-- [ ] O sistema deve utilizar um identificador temporário associado a um cache Redis
+- [ ] O sistema deve utilizar Redis como cache temporário para os dados do usuário
+- [ ] O sistema deve ter um job de polling para reprocessar pagamentos não processados pelo webhook
 
 ## Regra de negócio
 
-- [x] A conta no Jellyfin só deve ser criada após confirmação de pagamento pelo Stripe (evento checkout.session.completed)
-- [x] Os dados do usuário (username, email, password) devem trafegar exclusivamente via metadata da sessão do Stripe
+- [x] A conta no Jellyfin só deve ser criada após confirmação de pagamento pelo Stripe
 - [x] Apenas um plano mensal deve estar disponível para assinatura
-- [x] O sistema não deve criar contas duplicadas no Jellyfin para o mesmo email
-- [ ] O token temporário deve ser invalidado imediatamente após a criação da conta ou após a expiração do tempo de vida (TTL)
+- [x] O sistema não deve criar contas duplicadas no Jellyfin para o mesmo username
+- [ ] Os dados sensíveis devem ser armazenados no Redis com TTL de 1 hora vinculados a um token UUID
+- [ ] O token deve trafegar no metadata do Stripe no lugar dos dados sensíveis
+- [ ] O token deve ser invalidado imediatamente após a criação da conta ou expiração do TTL
+- [ ] O sistema não deve reprocessar um evento já processado (idempotência)
 
 Desenvolvido com ☕ e TypeScript. Sinta-se livre para abrir Issues ou enviar Pull Requests!
